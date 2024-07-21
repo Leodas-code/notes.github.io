@@ -1,0 +1,126 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sticky Notes</title>
+    <style>@import url('https://fonts.googleapis.com/css2?family=Aclonica&display=swap');
+
+        *{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background-color: #7158e2;
+        }
+        
+        #container {
+        display: grid;
+        grid-template-columns: repeat(auto-fill,200px);
+        gap: 24px;
+        padding: 24px;
+        }
+        
+        .sticky {
+        height: 200px;
+        padding: 16px;
+        border: none;
+        outline: none;
+        resize: none;
+        box-shadow: rgba(0, 0, 0, 0.3) 0px 19px 38px, rgba(0, 0, 0, 0.22) 0px 15px 12px;
+        }
+        
+        .btn-add {
+            height: 200px;
+        border: none;
+        outline: none;
+        color: #fff;
+        font-size: 20px;
+        background-color: #c56cf0;
+        cursor: pointer;
+        }
+        
+        .btn-add:hover{
+            background-color: #cd84f1;
+            border-radius: 5px;
+        }</style>
+</head>
+<body>
+   <div id="container">
+    <button class="btn-add">Add Note</button>
+   </div>
+
+    <script>const containerElement=document.getElementById("container");
+        const btnAdd=document.getElementsByClassName("btn-add")[0];
+        
+        
+        
+        
+        function getAppStorage(){
+            return JSON.parse(localStorage.getItem('rithish-app')||"[]");
+        }
+        
+        getAppStorage().forEach(element => {
+             const textElement=createTextElement(element.id,element.content);
+             containerElement.insertBefore(textElement,btnAdd);
+        });
+        
+        function createTextElement(id,content){
+        const textElement=document.createElement('textarea');
+        textElement.classList.add('sticky');
+        textElement.value=content;
+        textElement.placeholder='Enter Your Notes';
+        
+        textElement.addEventListener("change",()=>{
+            updateNote(id,textElement.value)
+        })
+        
+        textElement.addEventListener("dblclick",()=>{
+            const check=confirm("Are You to Sure Delete ?");
+            if(check){
+                deleteNotes(id,element);
+            }
+        });
+        
+        return textElement;
+        }
+        
+        function addSticky(){
+            const notes=getAppStorage();
+            const noteObject={
+                id:Math.floor(Math.random()*100000),
+                content:""
+            }
+            const textElement = createTextElement(noteObject.id,noteObject.content);
+            containerElement.insertBefore(textElement,btnAdd);
+            notes.push(noteObject);
+            saveNotes(notes);
+        }
+        
+        btnAdd.addEventListener('click',()=>addSticky());
+        
+        function saveNotes(notes){
+           localStorage.setItem("rithish-app",JSON.stringify(notes));
+        }
+        
+        function updateNote(id,content){
+            const notes=getAppStorage();
+            const updateElement=notes.filter((note)=>note.id==id)[0];
+            updateElement.content=content;
+            saveNotes(notes);
+        }
+        
+        
+        
+        
+        function deleteNotes(id,content){
+            const notes=getAppStorage().filter((note)=>note.id!=id);
+            saveNotes(notes);
+            containerElement.removeChild(textElement);
+
+        }</script>
+</body>
+</html>
